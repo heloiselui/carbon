@@ -174,8 +174,12 @@ class CDSMenu extends HostListenerMixin(LitElement) {
     return `${prefix}-menu-opened`;
   }
   updated(changedProperties) {
-    if (changedProperties.has('open') && this.open) {
-      this._handleOpen();
+    if (changedProperties.has('open')) {
+      if (this.open) {
+        this._handleOpen();
+      } else {
+        this._handleClose();
+      }
     }
   }
   connectedCallback() {
@@ -448,6 +452,13 @@ class CDSMenu extends HostListenerMixin(LitElement) {
         new CustomEvent((this.constructor as typeof CDSMenu).eventOnOpen, init)
       );
     }
+  };
+
+  _handleClose = () => {
+    this.position = [-1, -1];
+    this.style.removeProperty('inset-inline-start');
+    this.style.removeProperty('inset-inline-end');
+    this.style.removeProperty('inset-block-start');
   };
   dispatchCloseEvent = (e) => {
     const init = {
