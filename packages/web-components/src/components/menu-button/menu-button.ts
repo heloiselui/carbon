@@ -36,9 +36,6 @@ class CDSMenuButton extends HostListenerMixin(LitElement) {
   @query(`${prefix}-button`)
   _triggerNode!: CDSButton;
 
-  @query(`${prefix}-menu`)
-  _menuNode!: CDSMenu;
-
   @property({ type: Boolean, reflect: true })
   private _open = false;
 
@@ -95,9 +92,13 @@ class CDSMenuButton extends HostListenerMixin(LitElement) {
   private _handleClick = (event: Event) => {
     const path = event.composedPath();
     if (path.includes(this._triggerNode)) {
-      this._open = !this._open;
+      if (this._open) {
+        this._closeMenu({ restoreFocus: true });
+      } else {
+        this._open = true;
+      }
     } else if (this._open) {
-      this._open = false;
+      this._closeMenu();
     }
   };
 
@@ -107,8 +108,20 @@ class CDSMenuButton extends HostListenerMixin(LitElement) {
   private _handleBlur = ({ relatedTarget }: FocusEvent) => {
     // Close the menu if the focus moves outside the menu button or menu
     if (!this.contains(relatedTarget as Node)) {
-      this._open = false;
+      this._closeMenu({ restoreFocus: true });
     }
+  };
+
+  @HostListener(`${prefix}-menu-closed`)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- https://github.com/carbon-design-system/carbon/issues/20452
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleMenuClosed = (event: CustomEvent) => {
+    const menu = this.querySelector(`${prefix}-menu`);
+    if (!menu || !event.composedPath().includes(menu)) {
+      return;
+    }
+
+    this._closeMenu({ restoreFocus: true });
   };
 
   updated(changedProperties) {
@@ -146,6 +159,18 @@ class CDSMenuButton extends HostListenerMixin(LitElement) {
 
     if (changedProperties.has('menuBackgroundToken')) {
       menu.backgroundToken = this.menuBackgroundToken;
+    }
+  }
+
+  private _closeMenu({ restoreFocus = false } = {}) {
+    if (!this._open) {
+      return;
+    }
+
+    this._open = false;
+
+    if (restoreFocus) {
+      this._triggerNode?.focus();
     }
   }
 
