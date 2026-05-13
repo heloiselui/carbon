@@ -4,7 +4,6 @@
     "importPaths": {
       "packages/react/src/*": "@carbon/react"
     },
-    "paths": {},
     "include": ["code-connect/**"]
   }
 }
