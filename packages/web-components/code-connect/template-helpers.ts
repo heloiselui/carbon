@@ -7,6 +7,7 @@
 
 import figma from 'figma';
 
+// Use figma.code so dynamic attributes remain valid Code Connect sections.
 export function renderBooleanAttribute(name: string, value: unknown) {
   return value === true ? figma.code` ${name}` : null;
 }

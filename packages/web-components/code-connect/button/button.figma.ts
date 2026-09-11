@@ -39,7 +39,7 @@ function createTemplate() {
     return {
       id: 'cds-button-skeleton',
       imports: [
-        "import '@carbon/web-components/es/components/button/button.js'",
+        "import '@carbon/web-components/es/components/button/button-skeleton.js'",
       ],
       example: figma.code`<cds-button-skeleton${renderStringAttribute(
         'size',
@@ -52,10 +52,12 @@ function createTemplate() {
   const disabled = instance.getEnum('State', {
     Disabled: true,
   });
-  const buttonText = instance.getEnum('Type', {
-    'Icon only': '',
-    'Text + Icon': instance.getString('Button text'),
+  const text = instance.getString('Button text');
+  const isIconOnly = instance.getEnum('Type', {
+    'Icon only': true,
   });
+  const buttonText = isIconOnly ? '' : text;
+  const tooltipText = isIconOnly ? text : undefined;
   const kind = instance.getEnum('Style', {
     Primary: 'primary',
     Secondary: 'secondary',
@@ -84,6 +86,9 @@ function createTemplate() {
     )}${renderBooleanAttribute(
       'isExpressive',
       isExpressive
+    )}${renderStringAttribute(
+      'tooltip-text',
+      tooltipText
     )}>${buttonText} ${renderedIcon}</cds-button>`,
     metadata: { nestable: true },
   };
